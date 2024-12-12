@@ -32,6 +32,35 @@ public:
     virtual bool game_is_over() = 0;
 };
 
+class MisereTicTacToeBoard : public Board {
+public:   
+    MisereTicTacToeBoard();
+    bool update_board(int x, int y, char mark);
+    void display_board();
+    bool is_loser(char mark);
+    bool is_draw();
+    bool game_is_over();
+    ~MisereTicTacToeBoard();
+    };
+class NumericalTicTacToe : public Board {
+    private:
+    vector<int> player1_numbers;
+    vector<int> player2_numbers;
+    int **num_board;
+
+    bool check_sum_15(int a, int b, int c) {
+        return (a + b + c == 15);
+    }
+public:   
+    NumericalTicTacToe();
+     bool update_board(int x, int y, char symbol);
+    void display_board();
+     bool is_winner();
+    bool is_draw();
+    bool game_is_over();
+    ~NumericalTicTacToe();
+    };
+
 class X_O_Board : public Board
 {
 public:
