@@ -55,18 +55,6 @@ build CMakeFiles/TicTacToeUsingCpp.dir/main.cpp.obj: CXX_COMPILER__TicTacToeUsin
   OBJECT_DIR = CMakeFiles\TicTacToeUsingCpp.dir
   OBJECT_FILE_DIR = CMakeFiles\TicTacToeUsingCpp.dir
 
-build CMakeFiles/TicTacToeUsingCpp.dir/game_six.cpp.obj: CXX_COMPILER__TicTacToeUsingCpp_unscanned_Debug D$:/Study$ Material/Route_Flutter/chatAPP_Amira/Games/TicTacToeUsingCpp/game_six.cpp || cmake_object_order_depends_target_TicTacToeUsingCpp
-  DEP_FILE = CMakeFiles\TicTacToeUsingCpp.dir\game_six.cpp.obj.d
-  FLAGS = -g -fdiagnostics-color=always
-  OBJECT_DIR = CMakeFiles\TicTacToeUsingCpp.dir
-  OBJECT_FILE_DIR = CMakeFiles\TicTacToeUsingCpp.dir
-
-build CMakeFiles/TicTacToeUsingCpp.dir/game_five.cpp.obj: CXX_COMPILER__TicTacToeUsingCpp_unscanned_Debug D$:/Study$ Material/Route_Flutter/chatAPP_Amira/Games/TicTacToeUsingCpp/game_five.cpp || cmake_object_order_depends_target_TicTacToeUsingCpp
-  DEP_FILE = CMakeFiles\TicTacToeUsingCpp.dir\game_five.cpp.obj.d
-  FLAGS = -g -fdiagnostics-color=always
-  OBJECT_DIR = CMakeFiles\TicTacToeUsingCpp.dir
-  OBJECT_FILE_DIR = CMakeFiles\TicTacToeUsingCpp.dir
-
 
 # =============================================================================
 # Link build statements for EXECUTABLE target TicTacToeUsingCpp
@@ -75,7 +63,7 @@ build CMakeFiles/TicTacToeUsingCpp.dir/game_five.cpp.obj: CXX_COMPILER__TicTacTo
 #############################################
 # Link the executable TicTacToeUsingCpp.exe
 
-build TicTacToeUsingCpp.exe: CXX_EXECUTABLE_LINKER__TicTacToeUsingCpp_Debug CMakeFiles/TicTacToeUsingCpp.dir/main.cpp.obj CMakeFiles/TicTacToeUsingCpp.dir/game_six.cpp.obj CMakeFiles/TicTacToeUsingCpp.dir/game_five.cpp.obj
+build TicTacToeUsingCpp.exe: CXX_EXECUTABLE_LINKER__TicTacToeUsingCpp_Debug CMakeFiles/TicTacToeUsingCpp.dir/main.cpp.obj
   FLAGS = -g
   LINK_LIBRARIES = -lkernel32 -luser32 -lgdi32 -lwinspool -lshell32 -lole32 -loleaut32 -luuid -lcomdlg32 -ladvapi32
   OBJECT_DIR = CMakeFiles\TicTacToeUsingCpp.dir

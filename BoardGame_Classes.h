@@ -32,16 +32,7 @@ public:
     virtual bool game_is_over() = 0;
 };
 
-class MisereTicTacToeBoard : public Board {
-public:   
-    MisereTicTacToeBoard();
-    bool update_board(int x, int y, char mark);
-    void display_board();
-    bool is_loser(char mark);
-    bool is_draw();
-    bool game_is_over();
-    ~MisereTicTacToeBoard();
-    };
+
 class NumericalTicTacToe : public Board {
     private:
     vector<int> player1_numbers;
