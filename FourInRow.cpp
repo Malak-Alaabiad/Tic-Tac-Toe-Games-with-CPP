@@ -1,6 +1,15 @@
-#include <iostream>
-#include <vector>
-#include <random>
+// => ** FCAI-CU – CS213 - Object Oriented Programming – 2024 - Assignment ( 2 ) ** <=
+// => Last Modification Date: 15/12/2024
+// => Under supervision of  : Dr.Mohamed El-Ramly
+// => File Name             : CS213_A2_20230417_20230621
+// => Purpose               : XO Games using C++
+// => Authors               : Malak Mohamed Saad Fahmy Al-Aabiad       => ID: ( 20230417 )    => PROBLEMS:     ( 1, 2, 5, 7, 8 ).
+//                          : Mo'men Mohamed Mahmoud Mohamed Yosri     => ID: ( 20230621 )    => PROBLEMS:     ( 3, 4, 6, 9 ).
+// => Emails                : malakkalaabiadd@gmail.com
+//                          : momen.yosri@gmail.com
+// ===============================================================================================================================
+
+#include "bits/stdc++.h"
 #include "BoardGame_Classes.h"
 
 using namespace std;
@@ -116,5 +125,131 @@ public:
         cin >> y;
         x = 0;
 
+    }
+};
+
+//--------------------- Decision Tree Player ----------------------------------
+class FourInARowDecisionTreePlayer : public Player<char> {
+public:
+    FourInARowDecisionTreePlayer(char symbol) : Player<char>(symbol) {}
+
+    int evaluate_move(FourInARowBoard& board, int column, char player_symbol) {
+        int score = 0;
+        char opponent_symbol = (player_symbol == 'X' ? 'O' : 'X');
+
+        int row = -1;
+        for (int i = board.rows - 1; i >= 0; --i) {
+            if (board.board[i][column] == ' ') {
+                row = i;
+                break;
+            }
+        }
+
+        if (row == -1) return -1000;  // Invalid move
+
+        // Simulate the move
+        board.board[row][column] = player_symbol;
+
+
+        // Check for winning move
+        if(board.is_win()){
+            score += 1000;
+        } else {
+            // Check for potential wins for the opponent
+            for(int c = 0; c < board.columns; c++) {
+                int r = -1;
+                for (int i = board.rows - 1; i >= 0; --i) {
+                    if (board.board[i][c] == ' ') {
+                        r = i;
+                        break;
+                    }
+                }
+
+                if (r != -1) {
+                    board.board[r][c] = opponent_symbol;
+                    if(board.is_win()) score -= 500;
+                    board.board[r][c] = ' '; //Undo
+                }
+            }
+        }
+
+
+        // Score based on number of pieces in a row
+        for(int i = 0; i < board.rows; i++)
+        {
+            for (int j = 0; j < board.columns; j++)
+            {
+                if(board.board[i][j] == player_symbol)
+                {
+                    // horizontal
+                    int count = 0;
+                    for (int k = j; k < board.columns; k++)
+                        if (board.board[i][k] == player_symbol)
+                            count++;
+                        else
+                            break;
+
+                    if (count >= 2)
+                        score += (count * count); // Adjust the scoring system based on number of pieces
+
+                    // vertical
+                    count = 0;
+                    for (int k = i; k < board.rows; k++)
+                        if (board.board[k][j] == player_symbol)
+                            count++;
+                        else
+                            break;
+
+                    if (count >= 2)
+                        score += (count * count);
+
+                    // Diagonal right
+                    count = 0;
+                    for (int k = 0; k < board.rows; k++)
+                        if (i + k < board.rows && j + k < board.columns && board.board[i + k][j + k] == player_symbol)
+                            count++;
+                        else
+                            break;
+                    if (count >= 2)
+                        score += (count * count);
+
+                    // diagonal left
+                    count = 0;
+                    for(int k = 0; k < board.rows; k++)
+                        if (i + k < board.rows && j - k >=0 && board.board[i + k][j - k] == player_symbol)
+                            count++;
+                        else
+                            break;
+                    if(count >= 2)
+                        score += (count * count);
+
+                }
+            }
+        }
+
+        board.board[row][column] = ' '; // Undo the move
+        return score;
+    }
+
+    void getmove(int& x, int& y) override {
+        FourInARowBoard* board = dynamic_cast<FourInARowBoard*>(this->boardPtr);
+        int best_score = -100000;
+        int best_move = -1;
+        for (int column = 0; column < board->columns; column++) {
+            int score = evaluate_move(*board, column, this->getsymbol());
+            if (score > best_score) {
+                best_score = score;
+                best_move = column;
+            }
+        }
+        y = best_move;
+        x = 0;
+
+        for (int i = board->rows - 1; i >= 0; i--) {
+            if (board->board[i][y] == ' ') {
+                x = i;
+                break;
+            }
+        }
     }
 };

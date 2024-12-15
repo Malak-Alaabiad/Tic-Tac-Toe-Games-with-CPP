@@ -1,3 +1,14 @@
+// => ** FCAI-CU – CS213 - Object Oriented Programming – 2024 - Assignment ( 2 ) ** <=
+// => Last Modification Date: 15/12/2024
+// => Under supervision of  : Dr.Mohamed El-Ramly
+// => File Name             : CS213_A2_20230417_20230621
+// => Purpose               : XO Games using C++
+// => Authors               : Malak Mohamed Saad Fahmy Al-Aabiad       => ID: ( 20230417 )    => PROBLEMS:     ( 1, 2, 5, 7, 8 ).
+//                          : Mo'men Mohamed Mahmoud Mohamed Yosri     => ID: ( 20230621 )    => PROBLEMS:     ( 3, 4, 6, 9 ).
+// => Emails                : malakkalaabiadd@gmail.com
+//                          : momen.yosri@gmail.com
+// ========================================================================================================================================================================
+
 #include <iostream>
 #include <fstream>
 #include <string>
