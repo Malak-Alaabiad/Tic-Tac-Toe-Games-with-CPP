@@ -47,6 +47,7 @@ public:
     }
 
     void display_board() override {
+        cout << "\n----------------------";
         for (int i = 0; i < rows; i++) {
             cout << "\n|";
             for (int j = 0; j < columns; j++) {
@@ -56,7 +57,7 @@ public:
                     cout << " " << board[i][j] << "   |";
                 }
             }
-            cout << "\n---------------------";
+            cout << "\n----------------------";
         }
         cout << endl;
     }
@@ -104,5 +105,91 @@ public:
     void getmove(int& x, int& y) override {
         cout << this->getname() << ", enter your move (row, column): ";
         cin >> x >> y;
+    }
+};
+
+class MisereDecisionTreePlayer : public Player<char> {
+public:
+    MisereDecisionTreePlayer(char symbol) : Player<char>(symbol) {}
+
+    int evaluate_move(MisereBoard& board, int row, int col, char player_symbol) {
+        int score = 0;
+        char opponent_symbol = (player_symbol == 'X' ? 'O' : 'X');
+
+        if (board.board[row][col] != ' ') return -1000; // Invalid move
+
+        board.board[row][col] = player_symbol;
+
+        if (board.is_win()) {
+            score = 1000; // This move causes us to lose which is good
+            board.board[row][col] = ' '; // Undo
+            return score;
+        }
+
+
+        for (int i = 0; i < board.rows; ++i) {
+            for (int j = 0; j < board.columns; j++) {
+                if (board.board[i][j] == ' ') {
+                    board.board[i][j] = opponent_symbol;
+                    if (board.is_win())
+                        score -=500; // Opponent has a move that will win.
+                    board.board[i][j] = ' ';
+                }
+            }
+        }
+
+
+        // Score based on number of pieces in a row
+
+        int count = 0;
+        for(int i = 0; i < board.rows; i++)
+        {
+            if(board.board[i][0] == player_symbol)
+                count++;
+            if(board.board[i][1] == player_symbol)
+                count++;
+            if(board.board[i][2] == player_symbol)
+                count++;
+            if(count >= 2) score -= (count * count);
+            count = 0;
+            if(board.board[0][i] == player_symbol)
+                count++;
+            if(board.board[1][i] == player_symbol)
+                count++;
+            if(board.board[2][i] == player_symbol)
+                count++;
+            if (count >= 2) score -= (count * count);
+        }
+        if(board.board[0][0] == player_symbol && board.board[1][1] == player_symbol) score -= 1;
+        if(board.board[0][0] == player_symbol && board.board[2][2] == player_symbol) score -= 1;
+        if(board.board[1][1] == player_symbol && board.board[2][2] == player_symbol) score -= 1;
+        if(board.board[0][2] == player_symbol && board.board[1][1] == player_symbol) score -= 1;
+        if(board.board[0][2] == player_symbol && board.board[2][0] == player_symbol) score -= 1;
+        if(board.board[1][1] == player_symbol && board.board[2][0] == player_symbol) score -= 1;
+
+        board.board[row][col] = ' '; // Undo
+        return score;
+    }
+
+
+    void getmove(int& x, int& y) override {
+        MisereBoard* board = dynamic_cast<MisereBoard*>(this->boardPtr);
+        int best_score = -1000000; // Initialize to very low value
+        int best_x = -1, best_y = -1;
+
+        for (int row = 0; row < board->rows; ++row) {
+            for (int col = 0; col < board->columns; ++col) {
+                int score = evaluate_move(*board, row, col, this->getsymbol());
+                if (score > best_score) { // Now we look for the highest value
+                    best_score = score;
+                    best_x = row;
+                    best_y = col;
+                }
+            }
+        }
+
+        x = best_x;
+        y = best_y;
+
     }
 };

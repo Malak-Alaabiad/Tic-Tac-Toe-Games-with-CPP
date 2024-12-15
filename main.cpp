@@ -136,29 +136,60 @@ int main() {
                 cout << "\n--------------------------------------------------------------";
                 cout << endl << "||          ** Welcome To Numerical Tic-Tac-Toe  **        ||";
                 cout << "\n--------------------------------------------------------------";
-                boardPtr = reinterpret_cast<Board<char> *>(new NumericalBoard());
-                cout << "\nPlay against AI (1) or Human (2)?: ";
+                boardPtr = reinterpret_cast<Board<char>*>(new NumericalBoard());
+                cout << "\nPlay against:\n";
+                cout << "1. Random Computer AI\n";
+                cout << "2. Decision Tree AI\n";
+                cout << "3. Human Player\n";
+                cout << "Enter your choice: ";
                 int type;
                 cin >> type;
-                if (type == 1) {
-                    playerPtr[0] = reinterpret_cast<Player<char> *>(new NumericalHumanPlayer("Player 1", 1));
-                    playerPtr[1] = reinterpret_cast<Player<char> *>(new NumericalRandomPlayer(2));
-                } else {
-                    playerPtr[0] = reinterpret_cast<Player<char> *>(new NumericalHumanPlayer("Player 1", 1));
-                    playerPtr[1] = reinterpret_cast<Player<char> *>(new NumericalHumanPlayer("Player 2", 2));
-                    break;
+
+                playerPtr[0] = reinterpret_cast<Player<char>*>(new NumericalHumanPlayer("Player 1", 1));
+
+                switch (type) {
+                    case 1:
+                        playerPtr[1] = reinterpret_cast<Player<char>*>(new NumericalRandomPlayer(2));
+                        break;
+                    case 2:
+                        playerPtr[1] = reinterpret_cast<Player<char>*>(new NumericalDecisionTreePlayer(2));
+                        break;
+                    case 3:
+                        playerPtr[1] = reinterpret_cast<Player<char>*>(new NumericalHumanPlayer("Player 2", 2));
+                        break;
+                    default:
+                        cout << "Invalid choice. Defaulting to Human vs Human.\n";
+                        playerPtr[1] = reinterpret_cast<Player<char>*>(new NumericalHumanPlayer("Player 2", 2));
+                        break;
                 }
+                break;
+
                 case 6: {
                     boardPtr = new MisereBoard();
-                    cout << "\nPlay against AI (1) or Human (2)?: ";
+                    cout << "\nPlay against:\n";
+                    cout << "1. Random Computer AI\n";
+                    cout << "2. Decision Tree AI\n";
+                    cout << "3. Human Player\n";
+                    cout << "Enter your choice: ";
                     int type;
                     cin >> type;
-                    if (type == 1) {
-                        playerPtr[0] = new MisereHumanPlayer("Player 1", 'X');
-                        playerPtr[1] = new MisereRandomPlayer('O');
-                    } else {
-                        playerPtr[0] = new MisereHumanPlayer("Player 1", 'X');
-                        playerPtr[1] = new MisereHumanPlayer("Player 2", 'O');
+
+                    playerPtr[0] = new MisereHumanPlayer("Player 1", 'X');
+
+                    switch (type) {
+                        case 1:
+                            playerPtr[1] = new MisereRandomPlayer('O');
+                            break;
+                        case 2:
+                            playerPtr[1] = new MisereDecisionTreePlayer('O');
+                            break;
+                        case 3:
+                            playerPtr[1] = new MisereHumanPlayer("Player 2", 'O');
+                            break;
+                        default:
+                            cout << "Invalid choice. Defaulting to Human vs Human.\n";
+                            playerPtr[1] = new MisereHumanPlayer("Player 2", 'O');
+                            break;
                     }
                     break;
                 }
@@ -254,6 +285,41 @@ int main() {
             }
         }
 
+        if (choice == 1 || choice == 2 || choice == 3 || choice == 4 || choice == 5 || choice == 6 || choice == 7 || choice == 8 || choice == 9) {
+            playerPtr[0]->setBoard(boardPtr);
+            playerPtr[1]->setBoard(boardPtr);
+            GameManager<char> gameManager(boardPtr, playerPtr);
+
+
+            int x, y;
+            while (!boardPtr->game_is_over()) {
+                for (int i: {0, 1}) {
+                    playerPtr[i]->getmove(x, y);
+
+                    if (dynamic_cast<MisereDecisionTreePlayer *>(playerPtr[i])) {
+                        cout << playerPtr[i]->getname() << " moves: " << "(" << x << ", " << y << ")\n";
+                    }
+                    while (!boardPtr->update_board(x, y, playerPtr[i]->getsymbol())) {
+                        playerPtr[i]->getmove(x, y);
+                        if (dynamic_cast<MisereDecisionTreePlayer *>(playerPtr[i])) {
+                            cout << playerPtr[i]->getname() << " moves: " << "(" << x << ", " << y << ")\n";
+                        }
+                    }
+
+
+                    boardPtr->display_board();
+                    if (boardPtr->is_win()) {
+                        if (choice == 6)
+                            cout << playerPtr[i]->getname() << " loses!\n";
+                        else
+                            cout << playerPtr[i]->getname() << " wins!\n";
+                    }
+                    if (boardPtr->is_draw()) {
+                        cout << "Draw!\n";
+                    }
+                }
+            }
+        }
         if (boardPtr != nullptr && playerPtr[0] != nullptr && playerPtr[1] != nullptr) {
             playerPtr[0]->setBoard(boardPtr);
             playerPtr[1]->setBoard(boardPtr);

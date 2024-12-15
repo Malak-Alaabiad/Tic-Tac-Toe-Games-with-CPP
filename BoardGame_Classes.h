@@ -1,14 +1,3 @@
-// => ** FCAI-CU – CS213 - Object Oriented Programming – 2024 - Assignment ( 2 ) ** <=
-// => Last Modification Date: 15/12/2024
-// => Under supervision of  : Dr.Mohamed El-Ramly
-// => File Name             : CS213_A2_20230417_20230621
-// => Purpose               : XO Games using C++
-// => Authors               : Malak Mohamed Saad Fahmy Al-Aabiad       => ID: ( 20230417 )    => PROBLEMS:     ( 1, 2, 5, 7, 8 ).
-//                          : Mo'men Mohamed Mahmoud Mohamed Yosri     => ID: ( 20230621 )    => PROBLEMS:     ( 3, 4, 6, 9 ).
-// => Emails                : malakkalaabiadd@gmail.com
-//                          : momen.yosri@gmail.com
-// ========================================================================================================================================================================
-
 #ifndef _BOARDGAME_CLASSES_H
 #define _BOARDGAME_CLASSES_H
 
@@ -19,12 +8,10 @@ using namespace std;
 template <typename T>
 class Board {
 protected:
-//    int rows, columns;
-//    T** board;
     int n_moves = 0;
 
 public:
-    char **board;
+    T** board;
     int rows, columns;
 
 
@@ -86,7 +73,7 @@ private:
     Board<T>* boardPtr;
     Player<T>* players[2];
 public:
-    GameManager(Board<T>*, Player<T>* playerPtr[2]);
+    GameManager(Board<T>* bPtr, Player<T>* playerPtr[2]);
 
     void run();
 };
@@ -165,6 +152,5 @@ template <typename T>
 void Player<T>::setBoard(Board<T>* b) {
     this->boardPtr = b;
 }
-
 
 #endif //_BOARDGAME_CLASSES_H

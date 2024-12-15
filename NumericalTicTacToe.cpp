@@ -23,9 +23,9 @@ public:
     NumericalBoard() {
         rows = 3;
         columns = 3;
-        board = reinterpret_cast<char **>(new int *[rows]);
+        board = new int* [rows];
         for(int i = 0; i < rows; i++){
-            board[i] = reinterpret_cast<char *>(new int[columns]);
+            board[i] = new int[columns];
             for(int j = 0; j < columns; j++){
                 board[i][j] = 0;
             }
@@ -56,18 +56,17 @@ public:
     }
     void display_board() override {
         cout << "\n--------------------";
-        for (int i = 0; i < this->rows; i++) {
+        for (int i = 0; i < rows; i++) {
             cout << "\n| ";
-            for (int j = 0; j < this->columns; j++) {
-                if (this->board[i][j] == ' ') {
+            for (int j = 0; j < columns; j++) {
+                if (board[i][j] == 0) {
                     cout << "(" << i << "," << j << ")" << " |";
-                } else {
-                    cout << " " << this->board[i][j] << "   |";
+                }else{
+                    cout << " " << board[i][j] << "   |";
                 }
             }
             cout << "\n--------------------\n";
         }
-
         cout << endl;
     }
     bool is_win() override {
@@ -122,6 +121,89 @@ public:
         int c;
         cin >> c;
         this->symbol = c;
+
+    }
+};
+
+class NumericalDecisionTreePlayer : public Player<int> {
+public:
+    NumericalDecisionTreePlayer(int symbol) : Player<int>(symbol) {}
+
+
+    int evaluate_move(NumericalBoard& board, int row, int col, int player_symbol) {
+        int score = 0;
+        if (board.board[row][col] != 0) return -1000; // Invalid move
+
+        board.board[row][col] = player_symbol;
+        if(board.is_win()){
+            score = 1000;
+            board.board[row][col] = 0;
+            return score;
+        }
+
+        int opponent_symbol = (player_symbol % 2 == 0) ? 1 : 2;
+
+        for(int i = 0; i < board.rows; ++i) {
+            for(int j = 0; j < board.columns; j++){
+                if (board.board[i][j] == 0)
+                {
+                    board.board[i][j] = opponent_symbol;
+                    if (board.is_win()) score -= 500;
+                    board.board[i][j] = 0;
+                }
+
+            }
+        }
+        for (int i = 0; i < board.rows; ++i)
+        {
+            if (board.board[i][0] != 0 && board.board[i][1] != 0 && board.board[i][2] != 0)
+            {
+                score -= abs(15 - (board.board[i][0] + board.board[i][1] + board.board[i][2]));
+            }
+            if (board.board[0][i] != 0 && board.board[1][i] != 0 && board.board[2][i] != 0)
+            {
+                score -= abs(15 -(board.board[0][i] + board.board[1][i] + board.board[2][i]));
+            }
+        }
+        if (board.board[0][0] != 0 && board.board[1][1] != 0 && board.board[2][2] != 0) {
+            score -= abs(15 - (board.board[0][0] + board.board[1][1] + board.board[2][2]));
+        }
+        if (board.board[0][2] != 0 && board.board[1][1] != 0 && board.board[2][0] != 0) {
+            score -= abs(15 - (board.board[0][2] + board.board[1][1] + board.board[2][0]));
+        }
+
+
+
+        board.board[row][col] = 0;
+        return score;
+    }
+
+    void getmove(int& x, int& y) override {
+        NumericalBoard* board = dynamic_cast<NumericalBoard*>(this->boardPtr);
+        int best_score = -1000000;
+        int best_x = -1, best_y = -1;
+        vector<int> possible_moves = (this->getsymbol() % 2 == 0) ? vector<int> {2, 4, 6, 8} : vector<int> {1, 3, 5, 7, 9};
+
+        for (int row = 0; row < board->rows; ++row) {
+            for (int col = 0; col < board->columns; ++col) {
+                if(board->board[row][col] == 0){
+                    for(int move : possible_moves)
+                    {
+                        int score = evaluate_move(*board, row, col, move);
+                        if (score > best_score) {
+                            best_score = score;
+                            best_x = row;
+                            best_y = col;
+                            this->symbol = move;
+                        }
+
+                    }
+                }
+            }
+        }
+
+        x = best_x;
+        y = best_y;
 
     }
 };
