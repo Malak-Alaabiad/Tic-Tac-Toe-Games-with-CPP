@@ -43,7 +43,6 @@ void MisereTicTacToeBoard::display_board(){
         cout << endl;
 }
 bool MisereTicTacToeBoard::is_winner(){
-    //check rows
     // Check rows
     if (board[0][0] == board[0][1] && board[0][1] == board[0][2] && board[0][0] != ' ')
     {
@@ -67,7 +66,6 @@ bool MisereTicTacToeBoard::is_winner(){
     {
         return true;    }
 
-    //check columns
    if ((board[0][0] == board[1][1] == board[2][2] ) ||(board[0][2] == board[1][1] == board[2][0]))
    {return true;}
   return false;

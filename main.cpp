@@ -71,6 +71,21 @@ int main()
             gameMange.run();
             break;
         }
+        case 5:
+        {
+            NumericalTicTacToe gameBoard;
+            cout << "Press 1 if you want to play with computer: ";
+            cin >> choice;
+            if (choice != 1)
+                players[1] = new Player(2, 'o');
+            else
+                // Player pointer points to child
+                players[1] = new RandomPlayer('o', 3);
+
+            GameManager gameManager(&gameBoard, players);
+            gameManager.run();
+            break;
+        }
         case 6:
         {
             players[1] = new Player(1, 'O');
