@@ -134,3 +134,53 @@ public:
         cin >> x >> y;
     }
 };
+
+class FiveByFiveDecisionTreePlayer : public Player<char> {
+public:
+    FiveByFiveDecisionTreePlayer(char symbol) : Player<char>(symbol) {}
+
+    int evaluate_move(FiveByFiveBoard& board, int row, int col, char player_symbol) {
+        int score = 0;
+        char opponent_symbol = (player_symbol == 'X' ? 'O' : 'X');
+
+        if (row < 0 || row >= board.rows || col < 0 || col >= board.columns || board.board[row][col] != ' ')
+            return -1000; // Invalid move
+
+        board.board[row][col] = player_symbol;
+
+        // Check for the number of three in a rows after this move
+        score = board.count_three_in_a_row(player_symbol);
+
+        // Check what the other player would do after this
+        for (int r = 0; r < board.rows; ++r) {
+            for (int c = 0; c < board.columns; ++c) {
+                if (board.board[r][c] == ' ') {
+                    board.board[r][c] = opponent_symbol;
+                    score -= board.count_three_in_a_row(opponent_symbol);
+                    board.board[r][c] = ' ';
+                }
+            }
+        }
+        board.board[row][col] = ' ';
+        return score;
+
+    }
+    void getmove(int& x, int& y) override {
+        FiveByFiveBoard* board = dynamic_cast<FiveByFiveBoard*>(this->boardPtr);
+        int best_score = -1000000;
+        int best_x = -1, best_y = -1;
+
+        for (int row = 0; row < board->rows; ++row) {
+            for (int col = 0; col < board->columns; ++col) {
+                int score = evaluate_move(*board, row, col, this->getsymbol());
+                if (score > best_score) {
+                    best_score = score;
+                    best_x = row;
+                    best_y = col;
+                }
+            }
+        }
+        x = best_x;
+        y = best_y;
+    }
+};
