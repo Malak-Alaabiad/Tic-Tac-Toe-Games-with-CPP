@@ -2,6 +2,7 @@
 #include <vector>
 #include <random>
 #include "BoardGame_Classes.h"
+
 using namespace std;
 class MisereBoard : public Board<char> {
 public:
@@ -35,12 +36,18 @@ public:
     }
 
     void display_board() override {
-        for (int i = 0; i < rows; ++i) {
-            for (int j = 0; j < columns; ++j) {
-                cout << board[i][j] << " ";
+        for (int i = 0; i < rows; i++) {
+            cout << "\n|";
+            for (int j = 0; j < columns; j++) {
+                if (board[i][j] == ' ') {
+                    cout << "(" << i << "," << j << ")" << " |";
+                } else {
+                    cout << " " << board[i][j] << "   |";
+                }
             }
-            cout << endl;
+            cout << "\n---------------------";
         }
+        cout << endl;
     }
 
     bool is_win() override {

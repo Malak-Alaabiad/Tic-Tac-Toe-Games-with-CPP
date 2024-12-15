@@ -36,25 +36,19 @@ public:
     }
 
     void display_board() override {
-        for (int i = 0; i < rows; ++i) {
-            for (int j = 0; j < columns; ++j) {
-                if (board[i][j] == ' ')
-                    cout << "_ ";
-                else
-                    cout << board[i][j] << " ";
-                if(j < columns-1) cout << "|";
-            }
-            cout << endl;
-            if(i < rows-1){
-                for(int j = 0; j < columns; j++){
-                    cout << "---";
-                    if(j<columns-1) cout << "+";
+        cout << "\n------------------------------------";
+        for (int i = 0; i < rows; i++) {
+            cout << "\n|";
+            for (int j = 0; j < columns; j++) {
+                if (board[i][j] == ' ') {
+                    cout << "(" << i << "," << j << ")" << " |";
+                } else {
+                    cout << " " << board[i][j] << "   |";
                 }
-                cout << endl;
-
             }
-
+            cout << "\n------------------------------------";
         }
+        cout << endl;
     }
     int count_three_in_a_row(char symbol) {
         int count = 0;

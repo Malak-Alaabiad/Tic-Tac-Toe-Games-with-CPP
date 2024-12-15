@@ -1,104 +1,189 @@
-#include <iostream>
-#include <vector>
-#include <random>
+#ifndef GAME8_H
+#define GAME8_H
+
 #include "BoardGame_Classes.h"
+
 using namespace std;
 
-class SUSBoard : public Board<char> {
+int t_p = 0;
+
+template <typename T>
+class X_O_Board : public Board<T> {
 public:
-    SUSBoard() {
-        rows = 3;
-        columns = 3;
-        board = new char* [rows];
-        for(int i = 0; i < rows; i++){
-            board[i] = new char[columns];
-            for(int j = 0; j < columns; j++){
-                board[i][j] = ' ';
+    int score_p1 = 0, score_p2 = 0;
+
+    X_O_Board() {
+        this->rows = this->columns = 3;
+        this->board = new char*[this->rows];
+        for (int i = 0; i < this->rows; i++) {
+            this->board[i] = new char[this->columns];
+            for (int j = 0; j < this->columns; j++) {
+                this->board[i][j] = '.';
             }
         }
+        this->n_moves = 0;
     }
-    ~SUSBoard() {
-        for(int i=0; i<rows; i++){
-            delete [] board[i];
+
+    ~X_O_Board() {
+        for (int i = 0; i < this->rows; i++) {
+            delete[] this->board[i];
         }
-        delete [] board;
+        delete[] this->board;
     }
 
-    bool update_board(int x, int y, char symbol) override {
-        if (x < 0 || x >= rows || y < 0 || y >= columns) return false;
-        if (board[x][y] == ' ') {
-            board[x][y] = symbol;
-            n_moves++;
-            return true;
-        }
-        return false;
-    }
-
-    void display_board() override {
-        for (int i = 0; i < rows; ++i) {
-            for (int j = 0; j < columns; ++j) {
-                cout << board[i][j] << " ";
-            }
-            cout << endl;
-        }
-    }
-
-    int count_sus() {
-        int count = 0;
-        for (int i = 0; i < rows; ++i) {
-            // Check horizontal
-            if (board[i][0] == 'S' && board[i][1] == 'U' && board[i][2] == 'S') count++;
-
-            // Check vertical
-            if (board[0][i] == 'S' && board[1][i] == 'U' && board[2][i] == 'S') count++;
-
+    bool update_board(int x, int y, T symbol) {
+        if (x < 0 || x >= this->rows || y < 0 || y >= this->columns || this->board[x][y] != '.') {
+            return false;
         }
 
-        if (board[0][0] == 'S' && board[1][1] == 'U' && board[2][2] == 'S') count++;
-        if (board[0][2] == 'S' && board[1][1] == 'U' && board[2][0] == 'S') count++;
-        return count;
+        if (symbol == '.') {
+            this->n_moves--;
+            this->board[x][y] = '.';
+        } else {
+            this->n_moves++;
+            this->board[x][y] = toupper(symbol);
+        }
 
-    }
-    bool is_win() override {
-        //This is not a win-lose game, but the number of SUS will determine the winner in the is_draw method
-        return false;
-    }
-
-    bool is_draw() override {
-        if(n_moves < rows*columns) return false;
-        int p1 = count_sus();
-        cout << "Number of SUS sequences: " << p1 << "\n";
         return true;
     }
-    bool game_is_over() override {
-        return is_draw();
-    }
+
+    void display_board();
+    int check_round();
+    void update_score();
+    bool is_win();
+    bool is_draw();
+    bool game_is_over();
 };
 
-class SUSRandomPlayer : public RandomPlayer<char> {
+template <typename T>
+class X_O_Player : public Player<T> {
 public:
-    SUSRandomPlayer(char symbol) : RandomPlayer<char>(symbol) {}
-    void getmove(int& x, int& y) override{
-        SUSBoard* b = dynamic_cast<SUSBoard*>(this->boardPtr);
-        do{
-            x = rand() % 3;
-            y = rand() % 3;
-        }while(b->board[x][y] != ' ');
-
-    }
+    X_O_Player(string name, T symbol);
+    void getmove(int& x, int& y);
 };
 
-class SUSHumanPlayer : public Player<char> {
+template <typename T>
+class X_O_Random_Player : public RandomPlayer<T> {
 public:
-    SUSHumanPlayer(string n, char symbol) : Player<char>(n, symbol) {}
-
-    void getmove(int& x, int& y) override {
-        cout << this->getname() << ", enter your move (row, column): ";
-        cin >> x >> y;
-        // Add validation for the input
-        cout << "Enter your letter (S or U): ";
-        char c;
-        cin >> c;
-        this->symbol = c;
-    }
+    X_O_Random_Player(T symbol);
+    void getmove(int& x, int& y);
 };
+
+//--------------------------------------- IMPLEMENTATION
+
+#include <iostream>
+#include <cctype>  // for toupper()
+
+using namespace std;
+
+// Display the board and the pieces on it
+template <typename T>
+void X_O_Board<T>::display_board() {
+    cout << "\n----------------------";
+    for (int i = 0; i < this->rows; i++) {
+        cout << "\n| ";
+        for (int j = 0; j < this->columns; j++) {
+            if (this->board[i][j] == ' ') {
+                cout << "(" << i << "," << j << ")" << " |";
+            } else {
+                cout << " " << this->board[i][j] << "   |";
+            }
+        }
+        cout << "\n----------------------\n";
+    }
+    cout << "\nplayer 1 score: "<< this->score_p1<<endl;
+    cout <<"plyeer 2 score: "<<this->score_p2<<endl;
+
+    cout << endl;
+}
+
+template <typename T>
+int X_O_Board<T>::check_round() {
+    int count = 0;
+    string s1,s2;
+
+    for (int i = 0; i < this->rows; i++) {
+        s1={this->board[i][0],this->board[i][1],this->board[i][2]};
+        if (s1=="SUS") {
+            ++count;
+        }
+    }
+    for (int i = 0; i < this->columns; i++) {
+        s2={this->board[0][i],this->board[1][i],this->board[2][i]};
+        if (s2=="SUS") {
+            ++count;
+        }
+    }
+    s1={this->board[0][0]  ,this->board[1][1] , this->board[2][2]};
+    s2={this->board[0][2] , this->board[1][1] ,this->board[2][0]};
+    if ( s1== "SUS"){
+        ++count;
+    }
+    if(s2=="SUS"){
+        count++;
+    }
+
+
+    return count;
+}
+
+template <typename T>
+void X_O_Board<T>::update_score() {
+    int n = check_round();
+    if (this->n_moves % 2 == 1) {  // Player 1's turn (odd moves)
+        this->score_p1 += (n - t_p);
+        t_p = n;
+
+    } else {  // Player 2's turn (even moves)
+        this->score_p2 += (n - t_p);
+        t_p = n;
+
+    }
+}
+
+
+template <typename T>
+bool X_O_Board<T>::is_win() {
+    update_score();
+    return this->n_moves == 9 && this->score_p1 != this->score_p2;
+}
+
+template <typename T>
+bool X_O_Board<T>::is_draw() {
+    return this->n_moves == 9 && !is_win();
+}
+
+template <typename T>
+bool X_O_Board<T>::game_is_over() {
+    return is_win() || is_draw();
+}
+//--------------------------------------
+
+// Constructor for X_O_Player
+template <typename T>
+X_O_Player<T>::X_O_Player(string name, T symbol) : Player<T>(name, symbol) {}
+
+template <typename T>
+void X_O_Player<T>::getmove(int& x, int& y) {
+
+    cout << this->getname()<<"\nPlease enter your move (x y) between 0 and 2: ";
+    cin >> x >> y;
+}
+
+// Constructor for X_O_Random_Player
+template <typename T>
+X_O_Random_Player<T>::X_O_Random_Player(T symbol) : RandomPlayer<T>(symbol) {
+    this->dimension = 3;
+    this->name = "Random Computer Player";
+    srand(static_cast<unsigned int>(time(0)));  // Seed the random number generator
+}
+
+template <typename T>
+void X_O_Random_Player<T>::getmove(int& x, int& y) {
+
+    x = rand() % this->dimension;  // Random number between 0 and 2
+    y = rand() % this->dimension;
+
+}
+
+#endif // GAME8_H
