@@ -255,15 +255,30 @@ int main() {
                 }
                 case 8: {
                     boardPtr.reset(new UltimateBoard());
-                    cout << "\nPlay against AI (1) or Human (2)?: ";
+                    cout << "\nPlay against:\n";
+                    cout << "1. Random Computer AI\n";
+                    cout << "2. Decision Tree AI\n";
+                    cout << "3. Human Player\n";
+                    cout << "Enter your choice: ";
                     int type;
                     cin >> type;
-                    if (type == 1) {
-                        playerPtr[0].reset(new UltimateHumanPlayer("Player 1", 'X'));
-                        playerPtr[1].reset(new UltimateRandomPlayer('O'));
-                    } else {
-                        playerPtr[0].reset(new UltimateHumanPlayer("Player 1", 'X'));
-                        playerPtr[1].reset(new UltimateHumanPlayer("Player 2", 'O'));
+
+                    playerPtr[0].reset(new UltimateHumanPlayer("Player 1", 'X'));
+
+                    switch (type) {
+                        case 1:
+                            playerPtr[1].reset(new UltimateRandomPlayer('O'));
+                            break;
+                        case 2:
+                            playerPtr[1].reset(new UltimateDecisionTreePlayer('O'));
+                            break;
+                        case 3:
+                            playerPtr[1].reset(new UltimateHumanPlayer("Player 2", 'O'));
+                            break;
+                        default:
+                            cout << "Invalid choice. Defaulting to Human vs Human.\n";
+                            playerPtr[1].reset(new UltimateHumanPlayer("Player 2", 'O'));
+                            break;
                     }
                     break;
                 }

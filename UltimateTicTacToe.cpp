@@ -261,3 +261,99 @@ public:
         cin >> x >> y;
     }
 };
+
+class UltimateDecisionTreePlayer : public Player<char> {
+public:
+    UltimateDecisionTreePlayer(char symbol) : Player<char>(symbol) {}
+
+    int evaluate_move(UltimateBoard& board, int x, int y, char player_symbol) {
+        int score = 0;
+        char opponent_symbol = (player_symbol == 'X' ? 'O' : 'X');
+
+        int mainBoardX = x / 3;
+        int mainBoardY = y / 3;
+        int subBoardX = x % 3;
+        int subBoardY = y % 3;
+
+        if (board.mainBoard[mainBoardX][mainBoardY] != ' ') return -1000;
+        if (board.subBoards[mainBoardX][mainBoardY]->board[subBoardX][subBoardY] != ' ') return -1000;
+
+        board.subBoards[mainBoardX][mainBoardY]->board[subBoardX][subBoardY] = player_symbol;
+        if(board.isSubBoardWin(board.subBoards[mainBoardX][mainBoardY], player_symbol))
+            board.mainBoard[mainBoardX][mainBoardY] = player_symbol;
+        else if(board.isSubBoardDraw(board.subBoards[mainBoardX][mainBoardY]))
+            board.mainBoard[mainBoardX][mainBoardY] = 'D';
+
+
+
+        if(board.is_win()){
+            score += 1000;
+            board.subBoards[mainBoardX][mainBoardY]->board[subBoardX][subBoardY] = ' ';
+            board.mainBoard[mainBoardX][mainBoardY] = ' ';
+            return score;
+        }
+
+        for (int i = 0; i < 3; ++i) {
+            for (int j = 0; j < 3; ++j) {
+                if(board.mainBoard[i][j] == ' '){
+                    for(int row=0; row < 3; row++){
+                        for(int col=0; col < 3; col++){
+                            if(board.subBoards[i][j]->board[row][col] == ' '){
+                                board.subBoards[i][j]->board[row][col] = opponent_symbol;
+                                if(board.isSubBoardWin(board.subBoards[i][j], opponent_symbol))
+                                {
+                                    score -= 500;
+                                }
+                                board.subBoards[i][j]->board[row][col] = ' ';
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        if (board.isSubBoardWin(board.subBoards[mainBoardX][mainBoardY], player_symbol)){
+            score += 100;
+        } else if (board.isSubBoardDraw(board.subBoards[mainBoardX][mainBoardY])){
+            score += 10;
+        }
+
+        for (int i = 0; i < 3; ++i) {
+            if (board.mainBoard[i][0] != ' ' && board.mainBoard[i][0] != 'D' && board.mainBoard[i][0] == board.mainBoard[i][1]) score-=1;
+            if (board.mainBoard[i][1] != ' ' && board.mainBoard[i][1] != 'D' && board.mainBoard[i][1] == board.mainBoard[i][2]) score-=1;
+            if (board.mainBoard[0][i] != ' ' && board.mainBoard[0][i] != 'D' && board.mainBoard[0][i] == board.mainBoard[1][i]) score-=1;
+            if (board.mainBoard[1][i] != ' ' && board.mainBoard[1][i] != 'D' && board.mainBoard[1][i] == board.mainBoard[2][i]) score-=1;
+
+        }
+        if (board.mainBoard[0][0] != ' ' && board.mainBoard[0][0] != 'D' && board.mainBoard[0][0] == board.mainBoard[1][1]) score-=1;
+        if (board.mainBoard[1][1] != ' ' && board.mainBoard[1][1] != 'D' && board.mainBoard[1][1] == board.mainBoard[2][2]) score-=1;
+        if (board.mainBoard[0][2] != ' ' && board.mainBoard[0][2] != 'D' && board.mainBoard[0][2] == board.mainBoard[1][1]) score-=1;
+        if (board.mainBoard[1][1] != ' ' && board.mainBoard[1][1] != 'D' && board.mainBoard[1][1] == board.mainBoard[2][0]) score-=1;
+
+        board.subBoards[mainBoardX][mainBoardY]->board[subBoardX][subBoardY] = ' ';
+        board.mainBoard[mainBoardX][mainBoardY] = ' ';
+
+        return score;
+    }
+
+
+    void getmove(int& x, int& y) override {
+        UltimateBoard* board = dynamic_cast<UltimateBoard*>(this->boardPtr);
+        int best_score = -1000000;
+        int best_x = -1, best_y = -1;
+
+
+        for (int i = 0; i < 9; i++) {
+            for (int j = 0; j < 9; j++) {
+                int score = evaluate_move(*board, i, j, this->getsymbol());
+                if (score > best_score) {
+                    best_score = score;
+                    best_x = i;
+                    best_y = j;
+                }
+
+            }
+        }
+        x = best_x;
+        y = best_y;
+    }
+};
