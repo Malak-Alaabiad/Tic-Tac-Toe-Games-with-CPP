@@ -1,6 +1,7 @@
 #include "GameManager.cpp"
 #include "BoardGame_Classes.h"
 #include "game_six.cpp"
+#include "game_five.cpp"
 int main()
 {
 
@@ -73,16 +74,17 @@ int main()
         }
         case 5:
         {
-            NumericalTicTacToe gameBoard;
-            cout << "Press 1 if you want to play with computer: ";
+cout << "Press 1 if you want to play with computer: ";
             cin >> choice;
             if (choice != 1)
-                players[1] = new Player(2, 'o');
-            else
-                // Player pointer points to child
-                players[1] = new RandomPlayer('o', 3);
 
-            GameManager gameManager(&gameBoard, players);
+                players[1] = new Player(2, 'O');
+            else
+            {isPlayer= true;
+                // Player pointer points to child
+                players[1] = new RandomPlayer('O', 3);}
+
+            GameManager gameManager(new NumericalTicTacToe(), players);
             gameManager.run();
             break;
         }
