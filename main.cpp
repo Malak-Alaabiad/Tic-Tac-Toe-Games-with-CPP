@@ -27,7 +27,7 @@
 using namespace std;
 
 int main() {
-    srand(time(0)); // Seed the random number generator
+    srand(time(0));
 
     while (true) {
         cout << "\nChoose a game:\n";
@@ -50,27 +50,12 @@ int main() {
             break;
         }
 
-
-        Board<char>* boardPtr = nullptr;
-        Player<char>* playerPtr[2] = {nullptr, nullptr};
+        unique_ptr<Board<char>> boardPtr;
+        unique_ptr<Player<char>> playerPtr[2];
 
         switch (choice) {
             case 1: {
-                boardPtr = new PyramicBoard();
-                cout << "\nPlay against AI (1) or Human (2)?: ";
-                int type;
-                cin >> type;
-                if (type == 1) {
-                    playerPtr[0] = new PyramicHumanPlayer("Player 1", 'X');
-                    playerPtr[1] = new PyramicRandomPlayer('O');
-                } else {
-                    playerPtr[0] = new PyramicHumanPlayer("Player 1", 'X');
-                    playerPtr[1] = new PyramicHumanPlayer("Player 2", 'O');
-                }
-                break;
-            }
-            case 2: {
-                boardPtr = new FourInARowBoard();
+                boardPtr.reset(new PyramicBoard());
                 cout << "\nPlay against:\n";
                 cout << "1. Random Computer AI\n";
                 cout << "2. Decision Tree AI\n";
@@ -79,51 +64,81 @@ int main() {
                 int type;
                 cin >> type;
 
-                playerPtr[0] = new FourInARowHumanPlayer("Player 1", 'X');
+                playerPtr[0].reset(new PyramicHumanPlayer("Player 1", 'X'));
+
 
                 switch (type) {
                     case 1:
-                        playerPtr[1] = new FourInARowRandomPlayer('O');
+                        playerPtr[1].reset(new PyramicRandomPlayer('O'));
                         break;
                     case 2:
-                        playerPtr[1] = new FourInARowDecisionTreePlayer('O');
+                        playerPtr[1].reset(new PyramicDecisionTreePlayer('O'));
                         break;
                     case 3:
-                        playerPtr[1] = new FourInARowHumanPlayer("Player 2", 'O');
+                        playerPtr[1].reset(new PyramicHumanPlayer("Player 2", 'O'));
                         break;
                     default:
                         cout << "Invalid choice. Defaulting to Human vs Human.\n";
-                        playerPtr[1] = new FourInARowHumanPlayer("Player 2", 'O');
+                        playerPtr[1].reset(new PyramicHumanPlayer("Player 2", 'O'));
+                        break;
+                }
+                break;
+            }
+            case 2: {
+                boardPtr.reset(new FourInARowBoard());
+                cout << "\nPlay against:\n";
+                cout << "1. Random Computer AI\n";
+                cout << "2. Decision Tree AI\n";
+                cout << "3. Human Player\n";
+                cout << "Enter your choice: ";
+                int type;
+                cin >> type;
+
+                playerPtr[0].reset(new FourInARowHumanPlayer("Player 1", 'X'));
+
+                switch (type) {
+                    case 1:
+                        playerPtr[1].reset(new FourInARowRandomPlayer('O'));
+                        break;
+                    case 2:
+                        playerPtr[1].reset(new FourInARowDecisionTreePlayer('O'));
+                        break;
+                    case 3:
+                        playerPtr[1].reset(new FourInARowHumanPlayer("Player 2", 'O'));
+                        break;
+                    default:
+                        cout << "Invalid choice. Defaulting to Human vs Human.\n";
+                        playerPtr[1].reset(new FourInARowHumanPlayer("Player 2", 'O'));
                         break;
                 }
                 break;
             }
             case 3: {
-                boardPtr = new FiveByFiveBoard();
+                boardPtr.reset(new FiveByFiveBoard());
                 cout << "\nPlay against AI (1) or Human (2)?: ";
                 int type;
                 cin >> type;
                 if (type == 1) {
-                    playerPtr[0] = new FiveByFiveHumanPlayer("Player 1", 'X');
-                    playerPtr[1] = new FiveByFiveRandomPlayer('O');
+                    playerPtr[0].reset(new FiveByFiveHumanPlayer("Player 1", 'X'));
+                    playerPtr[1].reset(new FiveByFiveRandomPlayer('O'));
                 } else {
-                    playerPtr[0] = new FiveByFiveHumanPlayer("Player 1", 'X');
-                    playerPtr[1] = new FiveByFiveHumanPlayer("Player 2", 'O');
+                    playerPtr[0].reset(new FiveByFiveHumanPlayer("Player 1", 'X'));
+                    playerPtr[1].reset(new FiveByFiveHumanPlayer("Player 2", 'O'));
                 }
                 break;
             }
             case 4: {
                 try {
-                    boardPtr = new WordBoard();
+                    boardPtr.reset(new WordBoard());
                     cout << "\nPlay against AI (1) or Human (2)?: ";
                     int type;
                     cin >> type;
                     if (type == 1) {
-                        playerPtr[0] = new WordHumanPlayer("Player 1", ' ');
-                        playerPtr[1] = new WordRandomPlayer(' ');
+                        playerPtr[0].reset(new WordHumanPlayer("Player 1", ' '));
+                        playerPtr[1].reset(new WordRandomPlayer(' '));
                     } else {
-                        playerPtr[0] = new WordHumanPlayer("Player 1", ' ');
-                        playerPtr[1] = new WordHumanPlayer("Player 2", ' ');
+                        playerPtr[0].reset(new WordHumanPlayer("Player 1", ' '));
+                        playerPtr[1].reset(new WordHumanPlayer("Player 2", ' '));
                     }
                 } catch (const std::runtime_error &e) {
                     cerr << e.what() << endl;
@@ -136,7 +151,7 @@ int main() {
                 cout << "\n--------------------------------------------------------------";
                 cout << endl << "||          ** Welcome To Numerical Tic-Tac-Toe  **        ||";
                 cout << "\n--------------------------------------------------------------";
-                boardPtr = reinterpret_cast<Board<char>*>(new NumericalBoard());
+                boardPtr.reset(reinterpret_cast<Board<char> *>(new NumericalBoard()));
                 cout << "\nPlay against:\n";
                 cout << "1. Random Computer AI\n";
                 cout << "2. Decision Tree AI\n";
@@ -145,27 +160,27 @@ int main() {
                 int type;
                 cin >> type;
 
-                playerPtr[0] = reinterpret_cast<Player<char>*>(new NumericalHumanPlayer("Player 1", 1));
+                playerPtr[0].reset(reinterpret_cast<Player<char> *>(new NumericalHumanPlayer("Player 1", 1)));
 
                 switch (type) {
                     case 1:
-                        playerPtr[1] = reinterpret_cast<Player<char>*>(new NumericalRandomPlayer(2));
+                        playerPtr[1].reset(reinterpret_cast<Player<char> *>(new NumericalRandomPlayer(2)));
                         break;
                     case 2:
-                        playerPtr[1] = reinterpret_cast<Player<char>*>(new NumericalDecisionTreePlayer(2));
+                        playerPtr[1].reset(reinterpret_cast<Player<char> *>(new NumericalDecisionTreePlayer(2)));
                         break;
                     case 3:
-                        playerPtr[1] = reinterpret_cast<Player<char>*>(new NumericalHumanPlayer("Player 2", 2));
+                        playerPtr[1].reset(reinterpret_cast<Player<char> *>(new NumericalHumanPlayer("Player 2", 2)));
                         break;
                     default:
                         cout << "Invalid choice. Defaulting to Human vs Human.\n";
-                        playerPtr[1] = reinterpret_cast<Player<char>*>(new NumericalHumanPlayer("Player 2", 2));
+                        playerPtr[1].reset(reinterpret_cast<Player<char> *>(new NumericalHumanPlayer("Player 2", 2)));
                         break;
                 }
                 break;
 
                 case 6: {
-                    boardPtr = new MisereBoard();
+                    boardPtr.reset(new MisereBoard());
                     cout << "\nPlay against:\n";
                     cout << "1. Random Computer AI\n";
                     cout << "2. Decision Tree AI\n";
@@ -174,50 +189,65 @@ int main() {
                     int type;
                     cin >> type;
 
-                    playerPtr[0] = new MisereHumanPlayer("Player 1", 'X');
+                    playerPtr[0].reset(new MisereHumanPlayer("Player 1", 'X'));
 
                     switch (type) {
                         case 1:
-                            playerPtr[1] = new MisereRandomPlayer('O');
+                            playerPtr[1].reset(new MisereRandomPlayer('O'));
                             break;
                         case 2:
-                            playerPtr[1] = new MisereDecisionTreePlayer('O');
+                            playerPtr[1].reset(new MisereDecisionTreePlayer('O'));
                             break;
                         case 3:
-                            playerPtr[1] = new MisereHumanPlayer("Player 2", 'O');
+                            playerPtr[1].reset(new MisereHumanPlayer("Player 2", 'O'));
                             break;
                         default:
                             cout << "Invalid choice. Defaulting to Human vs Human.\n";
-                            playerPtr[1] = new MisereHumanPlayer("Player 2", 'O');
+                            playerPtr[1].reset(new MisereHumanPlayer("Player 2", 'O'));
                             break;
                     }
                     break;
                 }
                 case 7: {
-                    boardPtr = new FourByFourBoard();
-                    cout << "\nPlay against AI (1) or Human (2)?: ";
+                    boardPtr.reset(new FourByFourBoard());
+                    cout << "\nPlay against:\n";
+                    cout << "1. Random Computer AI\n";
+                    cout << "2. Decision Tree AI\n";
+                    cout << "3. Human Player\n";
+                    cout << "Enter your choice: ";
                     int type;
                     cin >> type;
-                    if (type == 1) {
-                        playerPtr[0] = new FourByFourHumanPlayer("Player 1", 'X');
-                        playerPtr[1] = new FourByFourRandomPlayer('O');
-                    } else {
-                        playerPtr[0] = new FourByFourHumanPlayer("Player 1", 'X');
-                        playerPtr[1] = new FourByFourHumanPlayer("Player 2", 'O');
+
+                    playerPtr[0].reset(new FourByFourHumanPlayer("Player 1", 'X'));
+
+                    switch (type) {
+                        case 1:
+                            playerPtr[1].reset(new FourByFourRandomPlayer('O'));
+                            break;
+                        case 2:
+                            playerPtr[1].reset(new FourByFourDecisionTreePlayer('O'));
+                            break;
+                        case 3:
+                            playerPtr[1].reset(new FourByFourHumanPlayer("Player 2", 'O'));
+                            break;
+                        default:
+                            cout << "Invalid choice. Defaulting to Human vs Human.\n";
+                            playerPtr[1].reset(new FourByFourHumanPlayer("Player 2", 'O'));
+                            break;
                     }
                     break;
                 }
                 case 8: {
-                    boardPtr = new UltimateBoard();
+                    boardPtr.reset(new UltimateBoard());
                     cout << "\nPlay against AI (1) or Human (2)?: ";
                     int type;
                     cin >> type;
                     if (type == 1) {
-                        playerPtr[0] = new UltimateHumanPlayer("Player 1", 'X');
-                        playerPtr[1] = new UltimateRandomPlayer('O');
+                        playerPtr[0].reset(new UltimateHumanPlayer("Player 1", 'X'));
+                        playerPtr[1].reset(new UltimateRandomPlayer('O'));
                     } else {
-                        playerPtr[0] = new UltimateHumanPlayer("Player 1", 'X');
-                        playerPtr[1] = new UltimateHumanPlayer("Player 2", 'O');
+                        playerPtr[0].reset(new UltimateHumanPlayer("Player 1", 'X'));
+                        playerPtr[1].reset(new UltimateHumanPlayer("Player 2", 'O'));
                     }
                     break;
                 }
@@ -236,6 +266,7 @@ int main() {
                     cout << "Choose Player X type:\n";
                     cout << "1. Human\n";
                     cout << "2. Random Computer\n";
+                    cout << "3. Decision Tree AI\n";
                     cin >> choice;
 
                     switch (choice) {
@@ -244,6 +275,9 @@ int main() {
                             break;
                         case 2:
                             players[0] = new X_O_Random_Player<char>('S');
+                            break;
+                        case 3:
+                            players[0] = new X_O_DecisionTreePlayer<char>('S');
                             break;
                         default:
                             cout << "Invalid choice for Player 1. Exiting the game.\n";
@@ -255,6 +289,7 @@ int main() {
                     cout << "Choose Player 2 type:\n";
                     cout << "1. Human\n";
                     cout << "2. Random Computer\n";
+                    cout << "3. Decision Tree AI\n";
                     cin >> choice;
 
                     switch (choice) {
@@ -263,6 +298,9 @@ int main() {
                             break;
                         case 2:
                             players[1] = new X_O_Random_Player<char>('U');
+                            break;
+                        case 3:
+                            players[1] = new X_O_DecisionTreePlayer<char>('U');
                             break;
                         default:
                             cout << "Invalid choice for Player 2. Exiting the game.\n";
@@ -277,65 +315,80 @@ int main() {
                     for (int i = 0; i < 2; ++i) {
                         delete players[i];
                     }
+                    break;
+
+                    return 0;
                 }
+            }
+
 
                 default:
                     cout << "Invalid choice. Please try again.\n";
                 continue;
             }
-        }
-
-        if (choice == 1 || choice == 2 || choice == 3 || choice == 4 || choice == 5 || choice == 6 || choice == 7 || choice == 8 || choice == 9) {
-            playerPtr[0]->setBoard(boardPtr);
-            playerPtr[1]->setBoard(boardPtr);
-            GameManager<char> gameManager(boardPtr, playerPtr);
 
 
-            int x, y;
-            while (!boardPtr->game_is_over()) {
-                for (int i: {0, 1}) {
-                    playerPtr[i]->getmove(x, y);
+                if (choice >= 1 && choice <= 8) {
+                    playerPtr[0]->setBoard(boardPtr.get());
+                    playerPtr[1]->setBoard(boardPtr.get());
+                    if (choice != 9) {
+                        int x, y;
+                        if (choice == 1) boardPtr->display_board();
+                        if (choice == 2) boardPtr->display_board();
+                        if (choice == 3) boardPtr->display_board();
+                        if (choice == 4) boardPtr->display_board();
+                        if (choice == 5) boardPtr->display_board();
+                        if (choice == 6) boardPtr->display_board();
+                        if (choice == 7) boardPtr->display_board();
+                        if (choice == 8) boardPtr->display_board();
 
-                    if (dynamic_cast<MisereDecisionTreePlayer *>(playerPtr[i])) {
-                        cout << playerPtr[i]->getname() << " moves: " << "(" << x << ", " << y << ")\n";
-                    }
-                    while (!boardPtr->update_board(x, y, playerPtr[i]->getsymbol())) {
-                        playerPtr[i]->getmove(x, y);
-                        if (dynamic_cast<MisereDecisionTreePlayer *>(playerPtr[i])) {
-                            cout << playerPtr[i]->getname() << " moves: " << "(" << x << ", " << y << ")\n";
+                        while (!boardPtr->game_is_over()) {
+                            for (int i: {0, 1}) {
+                                if (choice == 5 && dynamic_cast<NumericalHumanPlayer *>(playerPtr[i].get())) {
+                                    int c = playerPtr[i]->getsymbol();
+                                    playerPtr[i]->getmove(x, y);
+                                    if (!boardPtr->update_board(x, y, c)) {
+                                        i--;
+                                        continue;
+                                    }
+                                } else {
+                                    playerPtr[i]->getmove(x, y);
+                                    while (!boardPtr->update_board(x, y, playerPtr[i]->getsymbol())) {
+                                        playerPtr[i]->getmove(x, y);
+
+                                    }
+                                }
+
+                                if (dynamic_cast<MisereDecisionTreePlayer *>(playerPtr[i].get()) ||
+                                    dynamic_cast<NumericalDecisionTreePlayer *>(playerPtr[i].get()) ||
+                                    dynamic_cast<PyramicDecisionTreePlayer *>(playerPtr[i].get())) {
+                                    cout << playerPtr[i]->getname() << " moves: " << "(" << x << ", " << y << ")\n";
+                                }
+                                if (choice == 1) boardPtr->display_board();
+                                if (choice == 2) boardPtr->display_board();
+                                if (choice == 3) boardPtr->display_board();
+                                if (choice == 4) boardPtr->display_board();
+                                if (choice == 5) boardPtr->display_board();
+                                if (choice == 6) boardPtr->display_board();
+                                if (choice == 7) boardPtr->display_board();
+                                if (choice == 8) boardPtr->display_board();
+                                if (boardPtr->is_win()) {
+                                    if (choice == 6)
+                                        cout << playerPtr[i]->getname() << " loses!\n";
+                                    else
+                                        cout << playerPtr[i]->getname() << " wins!\n";
+                                    goto end_game;
+                                }
+                                if (boardPtr->is_draw()) {
+                                    cout << "Draw!\n";
+                                    goto end_game;
+                                }
+                            }
                         }
-                    }
-
-
-                    boardPtr->display_board();
-                    if (boardPtr->is_win()) {
-                        if (choice == 6)
-                            cout << playerPtr[i]->getname() << " loses!\n";
-                        else
-                            cout << playerPtr[i]->getname() << " wins!\n";
-                    }
-                    if (boardPtr->is_draw()) {
-                        cout << "Draw!\n";
+                        end_game:;
                     }
                 }
-            }
-        }
-        if (boardPtr != nullptr && playerPtr[0] != nullptr && playerPtr[1] != nullptr) {
-            playerPtr[0]->setBoard(boardPtr);
-            playerPtr[1]->setBoard(boardPtr);
-            GameManager<char> gameManager(boardPtr, playerPtr);
-            gameManager.run();
-
 
         }
-        delete boardPtr;
-        delete playerPtr[0];
-        delete playerPtr[1];
-
-        boardPtr = nullptr;
-        playerPtr[0] = nullptr;
-        playerPtr[1] = nullptr;
-
-    }
-    return 0;
+        return 0;
 }

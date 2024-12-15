@@ -197,4 +197,83 @@ void X_O_Random_Player<T>::getmove(int& x, int& y) {
 
 }
 
+
+template <typename T>
+class X_O_DecisionTreePlayer : public Player<T> {
+public:
+    X_O_DecisionTreePlayer(T symbol) : Player<T>(symbol) {
+        this->name = "Decision Tree AI";
+    }
+
+    int evaluate_move(X_O_Board<char>& board, int row, int col, char player_symbol) {
+        int score = 0;
+        char opponent_symbol = (player_symbol == 'S' ? 'U' : 'S');
+
+        if (row < 0 || row >= board.rows || col < 0 || col >= board.columns || board.board[row][col] != '.')
+            return -1000; // Invalid move
+
+        board.board[row][col] = player_symbol;
+
+        if (board.is_win()) {
+            score += 1000;
+            board.board[row][col] = '.';
+            return score;
+        }
+
+        for (int r = 0; r < board.rows; ++r) {
+            for (int c = 0; c < board.columns; ++c) {
+                if (board.board[r][c] == '.') {
+                    board.board[r][c] = opponent_symbol;
+                    if (board.is_win()) score -= 800;
+                    board.board[r][c] = '.';
+
+                }
+            }
+        }
+        string s1,s2;
+        for (int i = 0; i < board.rows; i++) {
+            s1={board.board[i][0],board.board[i][1],board.board[i][2]};
+            if (s1=="SUS") {
+                score -= 1;
+            }
+        }
+        for (int i = 0; i < board.columns; i++) {
+            s2={board.board[0][i],board.board[1][i],board.board[2][i]};
+            if (s2=="SUS") {
+                score -= 1;
+            }
+        }
+        s1={board.board[0][0]  ,board.board[1][1] , board.board[2][2]};
+        s2={board.board[0][2] , board.board[1][1] ,board.board[2][0]};
+        if ( s1== "SUS"){
+            score -= 1;
+        }
+        if(s2=="SUS"){
+            score -= 1;
+        }
+
+        board.board[row][col] = '.';
+        return score;
+    }
+
+    void getmove(int& x, int& y) override {
+        X_O_Board<char>* board = dynamic_cast<X_O_Board<char>*>(this->boardPtr);
+        int best_score = -1000000;
+        int best_x = -1, best_y = -1;
+
+        for (int row = 0; row < board->rows; ++row) {
+            for (int col = 0; col < board->columns; ++col) {
+                int score = evaluate_move(*board, row, col, this->getsymbol());
+                if (score > best_score) {
+                    best_score = score;
+                    best_x = row;
+                    best_y = col;
+                }
+            }
+        }
+        x = best_x;
+        y = best_y;
+    }
+};
+
 #endif //GAME9_H

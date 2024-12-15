@@ -165,3 +165,81 @@ public:
 
     }
 };
+
+class PyramicDecisionTreePlayer : public Player<char> {
+public:
+    PyramicDecisionTreePlayer(char symbol) : Player<char>(symbol) {}
+
+    int evaluate_move(PyramicBoard& board, int row, int col, char player_symbol) {
+        int score = 0;
+        char opponent_symbol = (player_symbol == 'X' ? 'O' : 'X');
+
+        if (row < 0 || row >= board.rows) return -1000;
+        if (row == 0 && (col < 0 || col >= board.columns)) return -1000;
+        if (row == 1 && (col < 0 || col >= 3)) return -1000;
+        if (row == 2 && (col < 0 || col >= 1)) return -1000;
+        if (board.board[row][col] != ' ') return -1000;
+
+        // 1. Simulate the Move
+        board.board[row][col] = player_symbol;
+        // 2. Check if this move causes a win.
+        if (board.is_win()) {
+            score += 1000; // High score for a winning move
+            board.board[row][col] = ' ';
+            return score;
+        }
+        // 3. Check if opponent can win with his next move
+        for (int r = 0; r < board.rows; ++r) {
+            for (int c = 0; c < board.columns; c++) {
+                if(r == 0 && c >= 5) continue;
+                if(r == 1 && c >= 3) continue;
+                if(r == 2 && c >= 1) continue;
+                if(board.board[r][c] == ' '){
+                    board.board[r][c] = opponent_symbol;
+                    if (board.is_win()) score -= 800; // Very high negative score, almost as important as winning the game.
+                    board.board[r][c] = ' ';
+                }
+
+            }
+        }
+        // 4. Check for incomplete lines, give the move a low score if the line is far from being completed.
+
+        if(board.board[0][0] != ' ' && board.board[0][1] != ' ' && board.board[0][2] != ' ') score -= 1;
+        if(board.board[0][1] != ' ' && board.board[0][2] != ' ' && board.board[0][3] != ' ') score -= 1;
+        if(board.board[0][2] != ' ' && board.board[0][3] != ' ' && board.board[0][4] != ' ') score -= 1;
+
+        if(board.board[1][0] != ' ' && board.board[1][1] != ' ' && board.board[1][2] != ' ') score -= 1;
+
+        if (board.board[0][0] != ' ' && board.board[1][0] != ' ' && board.board[2][0] != ' ') score -= 1;
+        if (board.board[0][1] != ' ' && board.board[1][1] != ' ') score -= 1;
+        if (board.board[0][3] != ' ' && board.board[1][2] != ' ') score -= 1;
+        if (board.board[0][4] != ' ' && board.board[1][2] != ' ' && board.board[2][0] != ' ') score -= 1;
+
+
+        board.board[row][col] = ' '; // Undo the move
+        return score;
+    }
+
+    void getmove(int& x, int& y) override {
+        PyramicBoard* board = dynamic_cast<PyramicBoard*>(this->boardPtr);
+        int best_score = -1000000;
+        int best_x = -1, best_y = -1;
+
+        for (int row = 0; row < board->rows; ++row) {
+            for (int col = 0; col < board->columns; ++col) {
+                if(row == 0 && col >= 5) continue;
+                if(row == 1 && col >= 3) continue;
+                if(row == 2 && col >= 1) continue;
+
+                int score = evaluate_move(*board, row, col, this->getsymbol());
+                if (score > best_score) {
+                    best_score = score;
+                    best_x = row;
+                    best_y = col;
+                }
+            }
+        }
+        x = best_x;
+        y = best_y;
+    }
+};

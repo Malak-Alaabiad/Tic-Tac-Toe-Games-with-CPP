@@ -49,12 +49,19 @@ public:
         return true;
     }
     void display_board() override {
-        for (int i = 0; i < rows; ++i) {
-            for (int j = 0; j < columns; ++j) {
-                cout << board[i][j] << " ";
+        cout << "\n---------------------------";
+        for (int i = 0; i < rows; i++) {
+            cout << "\n|";
+            for (int j = 0; j < columns; j++) {
+                if (board[i][j] == ' ') {
+                    cout << "(" << i << "," << j << ")" << " |";
+                } else {
+                    cout << " " << board[i][j] << "   |";
+                }
             }
-            cout << endl;
+            cout << "\n---------------------------";
         }
+        cout << endl;
     }
     bool is_win() override {
         for (int i = 0; i < rows; ++i) {
@@ -142,5 +149,102 @@ public:
     void getmove(int& x, int& y) override {
         cout << this->getname() << ", enter your move (row, column): ";
         cin >> x >> y;
+    }
+};
+
+class FourByFourDecisionTreePlayer : public Player<char> {
+public:
+    FourByFourDecisionTreePlayer(char symbol) : Player<char>(symbol) {}
+
+
+    int evaluate_move(FourByFourBoard& board, int row, int col, char player_symbol) {
+        int score = 0;
+        char opponent_symbol = (player_symbol == 'X' ? 'O' : 'X');
+
+        if (row < 0 || row >= board.rows || col < 0 || col >= board.columns || board.board[row][col] != ' ')
+            return -1000; // Invalid move
+
+        board.board[row][col] = player_symbol;
+
+        if (board.is_win()) {
+            score += 1000; // High score for a winning move
+            board.board[row][col] = ' ';
+            return score;
+        }
+
+        for (int r = 0; r < board.rows; ++r) {
+            for (int c = 0; c < board.columns; ++c) {
+                if (board.board[r][c] == ' ') {
+                    board.board[r][c] = opponent_symbol;
+                    if (board.is_win()) score -= 500;
+                    board.board[r][c] = ' ';
+                }
+            }
+        }
+        for (int i = 0; i < board.rows; ++i) {
+            for (int j = 0; j < board.columns; ++j) {
+                if (board.board[i][j] != ' ') {
+                    char symbol = board.board[i][j];
+                    // Check horizontal
+                    int count = 0;
+                    if(j + 2 < board.columns)
+                    {
+                        if(board.board[i][j] == symbol) count++;
+                        if(board.board[i][j+1] == symbol) count++;
+                        if(board.board[i][j+2] == symbol) count++;
+                        if(count >= 2) score -= 1;
+                    }
+                    count = 0;
+                    if(i + 2 < board.rows)
+                    {
+                        if(board.board[i][j] == symbol) count++;
+                        if(board.board[i+1][j] == symbol) count++;
+                        if(board.board[i+2][j] == symbol) count++;
+                        if(count >= 2) score -= 1;
+                    }
+
+                    count = 0;
+                    if (i + 2 < board.rows && j + 2 < board.columns)
+                    {
+                        if(board.board[i][j] == symbol) count++;
+                        if(board.board[i+1][j+1] == symbol) count++;
+                        if(board.board[i+2][j+2] == symbol) count++;
+                        if(count >= 2) score -= 1;
+                    }
+                    count = 0;
+                    if (i + 2 < board.rows && j - 2 >= 0)
+                    {
+                        if(board.board[i][j] == symbol) count++;
+                        if(board.board[i+1][j-1] == symbol) count++;
+                        if(board.board[i+2][j-2] == symbol) count++;
+                        if(count >= 2) score -= 1;
+                    }
+
+                }
+            }
+        }
+
+        board.board[row][col] = ' '; // Undo the move
+        return score;
+    }
+
+    void getmove(int& x, int& y) override {
+        FourByFourBoard* board = dynamic_cast<FourByFourBoard*>(this->boardPtr);
+        int best_score = -1000000;
+        int best_x = -1, best_y = -1;
+
+        for (int row = 0; row < board->rows; ++row) {
+            for (int col = 0; col < board->columns; ++col) {
+                int score = evaluate_move(*board, row, col, this->getsymbol());
+                if (score > best_score) {
+                    best_score = score;
+                    best_x = row;
+                    best_y = col;
+                }
+            }
+        }
+        x = best_x;
+        y = best_y;
+
     }
 };
