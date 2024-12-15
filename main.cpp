@@ -146,15 +146,30 @@ int main() {
             case 4: {
                 try {
                     boardPtr.reset(new WordBoard());
-                    cout << "\nPlay against AI (1) or Human (2)?: ";
+                    cout << "\nPlay against:\n";
+                    cout << "1. Random Computer AI\n";
+                    cout << "2. Decision Tree AI\n";
+                    cout << "3. Human Player\n";
+                    cout << "Enter your choice: ";
                     int type;
                     cin >> type;
-                    if (type == 1) {
-                        playerPtr[0].reset(new WordHumanPlayer("Player 1", ' '));
-                        playerPtr[1].reset(new WordRandomPlayer(' '));
-                    } else {
-                        playerPtr[0].reset(new WordHumanPlayer("Player 1", ' '));
-                        playerPtr[1].reset(new WordHumanPlayer("Player 2", ' '));
+
+                    playerPtr[0].reset(new WordHumanPlayer("Player 1", ' '));
+
+                    switch (type) {
+                        case 1:
+                            playerPtr[1].reset(new WordRandomPlayer(' '));
+                            break;
+                        case 2:
+                            playerPtr[1].reset(new WordDecisionTreePlayer(' '));
+                            break;
+                        case 3:
+                            playerPtr[1].reset(new WordHumanPlayer("Player 2", ' '));
+                            break;
+                        default:
+                            cout << "Invalid choice. Defaulting to Human vs Human.\n";
+                            playerPtr[1].reset(new WordHumanPlayer("Player 2", ' '));
+                            break;
                     }
                 } catch (const std::runtime_error &e) {
                     cerr << e.what() << endl;
