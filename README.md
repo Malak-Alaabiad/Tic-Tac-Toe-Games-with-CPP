@@ -9,9 +9,6 @@
 1. [**Game Variations**](#game-variations)
 2. [**How to Play**](#how-to-play)
 3. [**Game Modes**](#game-modes)
-4. [**Installation**](#installation)
-5. [**Contributing**](#contributing)
-6. [**License**](#license)
 
 ---
 
@@ -62,46 +59,7 @@
 
 ---
 
-## **🛠️ Installation**
-
-**Follow these steps to set up the project on your local machine:**
-
-1. **Clone this repository:**
-   ```bash
-   git clone https://github.com/your-username/tic-tac-toe-bonanza.git
-   ```
-2. **Navigate to the project directory:**
-   ```bash
-   cd tic-tac-toe-bonanza
-   ```
-3. **Compile the code:**
-   ```bash
-   g++ -o tictactoe main.cpp
-   ```
-4. **Run the program:**
-   ```bash
-   ./tictactoe
-   ```
-
----
-
-## **🎨 Contributing**
-
-**We welcome contributions! Whether you want to:**
-
-- **Add a new Tic Tac Toe variation.**
-- **Improve AI strategies.**
-- **Fix bugs or optimize the code.**
-
-**Feel free to fork the repo and create a pull request. Check out our **[**contribution guidelines**](CONTRIBUTING.md)** for more details.**
-
----
-
-## **🔒 License**
-
-**This project is licensed under the MIT License. See the **[**LICENSE**](LICENSE)** file for details.**
-
----
+**This repository was created by Malak Al-Aabiad and Mo'men Yosri.**
 
 **Enjoy this collection of Tic Tac Toe games, and may the best strategy win! 🏆**
 
