@@ -1,6 +1,6 @@
-# **Tic Tac Toe Bonanza! 🎮🌟**
+# **Tic Tac Toe Games! 🎮🌟**
 
-**Welcome to Tic Tac Toe Bonanza, the ultimate collection of Tic Tac Toe games with a twist! This repository contains a variety of exciting and creative takes on the classic Tic Tac Toe game. Each variation is designed to challenge your strategy and keep the fun going for hours!**
+**Welcome to Tic Tac Toe Games, the ultimate collection of Tic Tac Toe games with a twist! This repository contains a variety of exciting and creative takes on the classic Tic Tac Toe game. Each variation is designed to challenge your strategy and keep the fun going for hours!**
 
 ---
 
